@@ -14,22 +14,26 @@ field_traits <- field_traits %>%
 ggplot(field_traits, aes(Site, Height_cm)) +
   facet_grid(~Species) +
   geom_point(aes(color = site_groups)) +
-  scale_color_manual(values= c("deepskyblue","orange"))
+  scale_color_manual(values= c("deepskyblue","orange")) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 #Stomata conductance by species and location
 ggplot(field_traits, aes(Site, Stomata_Conductance_mmol_m2s)) +
   facet_grid(~Species) +
   geom_point(aes(color = site_groups)) +
-  scale_color_manual(values= c("deepskyblue","orange"))
+  scale_color_manual(values= c("deepskyblue","orange"))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 #SLA by species and location
 ggplot(field_traits, aes(Site, SLA_cm2)) +
   facet_grid(~Species) +
   geom_point(aes(color = site_groups)) +
-  scale_color_manual(values= c("deepskyblue","orange"))
+  scale_color_manual(values= c("deepskyblue","orange"))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 #LDMC by species and location
 ggplot(field_traits, aes(Site, LDMC)) +
   facet_grid(~Species) +
   geom_point(aes(color = site_groups)) +
-  scale_color_manual(values= c("deepskyblue","orange"))
+  scale_color_manual(values= c("deepskyblue","orange")) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
