@@ -4,4 +4,4 @@ datpath <- "C:/Users/Lina/Dropbox/Academics/Projects/Perennial Grasses Eastern O
 library(tidyverse)
 
 #read in soil moisture data
-soil_mois <- read_csv(paste(datpath, "/Soil_moisture/z6-05212 120219121219.csv", sep=""))
+soil_mois <- read_csv(paste(datpath, "/Soil_moisture/z6-05212 25Feb20-1208.csv", sep=""))

@@ -3,7 +3,7 @@ library(ggplot2)
 
 #Take out row 1 and 2 and rename column 1 
 soil_mois1 <- soil_mois[-(1:2),]
-soil_mois1$Time <- soil_mois1$`z6-05212` 
+soil_mois1$Time <- soil_mois1$`Hi` 
 
 #Gather columns to consolidate the data
 soil_mois1 <- soil_mois1 %>%
