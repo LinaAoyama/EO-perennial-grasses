@@ -22,8 +22,8 @@ ggplot(germination_sorted, aes(x = Genotype)) +
   geom_bar() + 
   facet_wrap(vars(Species), nrow = 6)
 
-#Germination of Elymus elymoides only
+#Seedling emergence rate of Elymus elymoides only
 ggplot(germination_sorted %>% filter(Species == "Elymus elymoides"), aes(x = Genotype, y = Germination/10)) +
   geom_jitter(aes(col = Plot))+
   theme_bw() +
-  labs(y = "Germination rate", col = "Treatment")
+  labs(y = "Seedling emergence rate", col = "Treatment")
