@@ -39,7 +39,7 @@ germination_summary <- germination_sorted %>%
             se_emergence = se(Germination)/10) %>%
   mutate(Genotype = if_else(Genotype %in% c("Butte Valley"), "BV", as.character(Genotype))) %>%
   mutate(Genotype = if_else(Genotype %in% c("Winnemuca"), "Winm", as.character(Genotype)))
-germination_summary$Genotype <- ordered(germination_summary$Genotype, levels = c("EOARC", "Steens", "BV", "Winm", "Gund", "Reno"))
+germination_summary$Genotype <- ordered(germination_summary$Genotype, levels = c("BV",  "Steens", "EOARC",  "Gund", "Winm", "Reno"))
 
 ggplot(germination_summary %>% filter(Species == "Elymus elymoides"), aes(y = mean_emergence, x = Genotype)) +
   geom_point() +
