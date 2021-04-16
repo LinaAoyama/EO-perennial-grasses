@@ -41,7 +41,8 @@ germination_summary <- germination_sorted %>%
   mutate(Genotype = if_else(Genotype %in% c("Winnemuca"), "Winm", as.character(Genotype)))
 germination_summary$Genotype <- ordered(germination_summary$Genotype, levels = c("BV",  "Steens", "EOARC",  "Gund", "Winm", "Reno"))
 
-ggplot(germination_summary %>% filter(Species == "Elymus elymoides"), aes(y = mean_emergence, x = Genotype)) +
+ggplot(germination_summary %>% filter(Species == "Elymus elymoides") %>% filter(Genotype != "Steens")
+       , aes(y = mean_emergence, x = Genotype)) +
   geom_point() +
   geom_errorbar(aes(ymin = mean_emergence-se_emergence, ymax = mean_emergence+se_emergence), width = 0.4, alpha = 0.9, size = 1) +
   theme_bw() +
