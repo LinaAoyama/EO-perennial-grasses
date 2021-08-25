@@ -1,29 +1,47 @@
-#First, load data from compiling_soil_moisture_data. We'll start with data visualization. 
+### Packages
 library(ggplot2)
-
-#Take out row 1 and 2 and rename column 1 
-soil_mois1 <- soil_mois[-(1:2),]
-soil_mois1$Time <- soil_mois1$`Hi` 
-
-#Gather columns to consolidate the data
-soil_mois1 <- soil_mois1 %>%
-  gather("Port 1", "Port 2", "Port 3", "Port 4", "Port 5", "Port 6", key = "Port", value = "SM" )
-
-#Make a column for soil depth
-soil_mois1 <- soil_mois1 %>%
-  mutate(Depth = ifelse(Port %in% c("Port 1", "Port 3", "Port 5"), "5 cm", "15 cm"))
-soil_mois1$Depth <- factor(soil_mois1$Depth, levels = c("5 cm", "15 cm"))
-
 require(lubridate)
-#Specify the Time column by month, date, year, and time
-soil_mois1$Time <- mdy_hm(soil_mois1$Time)
+library(tidyverse)
 
-#Soil moisture vs time
-ggplot(soil_mois1, aes(Time, as.numeric(SM))) +
-  geom_point(aes(color = Port)) +
+### Data Import ###
+source("Soil Moisture/compiling_soil_moisture_data.R")
+
+### Tidy data ###
+#Make a column for time 
+names(soil_mois)[1] <- "Time"
+
+#Tidy data into a long dataframe
+soil_mois_long <- soil_mois %>%
+  gather("Port 1", "Port 2", "Port 3", "Port 4", "Port 5", "Port 6", key = "Port", value = "VWC" ) %>%
+  select(Time, Port, VWC) %>%
+  mutate(Depth = ifelse(Port %in% c("Port 1", "Port 3", "Port 5"), "5 cm", "15 cm")) %>% #Make a column for soil depth
+  mutate(Treatment = ifelse(Port %in% c("Port 1", "Port 2"), "50% cover", ifelse(Port %in% c("Port 3", "Port 4"), "80% cover", "ambient")))
+
+#Reorder factor levels
+soil_mois_long$Depth <- factor(soil_mois_long$Depth, levels = c("5 cm", "15 cm"))
+soil_mois_long$Treatment <- factor(soil_mois_long$Treatment, levels = c("ambient", "50% cover", "80% cover"))
+
+#Specify the Time column by month, date, year, and time
+soil_mois_long$Time <- mdy_hm(soil_mois_long$Time)
+
+### Visualize data
+#Timeseries
+ggplot(soil_mois_long, aes(Time, as.numeric(VWC))) +
+  geom_line(aes(color = Treatment)) +
   facet_wrap(~Depth, ncol = 1)+
   ylim(0, 0.35)+
-  ylab(bquote('Soil Moisture ('~m^3/m^3 ~")")) +
-  scale_color_discrete(name = "Treatment and depth", labels = c("80% cover, 5cm", "80% cover, 15cm",
-                                                                    "50% cover, 5cm", "50% cover, 15cm",
-                                                                    "ambient, 5cm", "ambient, 15 cm"))
+  ylab(bquote(Soil~Volumetric~Water~Content~(m^3/m^3)))+
+  theme(text = element_text(size=16),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        #legend.position = "none",
+        axis.title = element_text(size = 14))+
+  scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
+#averages
+ggplot(soil_mois_long, aes(Treatment, as.numeric(VWC)))+
+  geom_boxplot()+
+  facet_wrap(~Depth, ncol = 1)
+
+
