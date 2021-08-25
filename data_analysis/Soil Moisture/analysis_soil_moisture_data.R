@@ -4,7 +4,7 @@ require(lubridate)
 library(tidyverse)
 
 ### Data Import ###
-source("Soil Moisture/compiling_soil_moisture_data.R")
+source("data_compiling/compiling_soil_moisture_data.R")
 
 ### Tidy data ###
 #Make a column for time 
@@ -43,5 +43,5 @@ ggplot(soil_mois_long, aes(Time, as.numeric(VWC))) +
 ggplot(soil_mois_long, aes(Treatment, as.numeric(VWC)))+
   geom_boxplot()+
   facet_wrap(~Depth, ncol = 1)
-
-
+summary(aov(VWC~Treatment, soil_mois_long%>%filter(Depth == "5 cm")))
+summary(aov(VWC~Treatment, soil_mois_long%>%filter(Depth == "15 cm")))
