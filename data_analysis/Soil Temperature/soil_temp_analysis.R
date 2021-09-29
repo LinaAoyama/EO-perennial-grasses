@@ -8,19 +8,31 @@ library(multcomp) #tukey
 source("data_compiling/compiling_soil_temp.R")
 
 ### Tidy data ###
-#Reorder factor levels
-soil_temp$Depth <- factor(soil_temp$Depth, levels = c("5 cm", "15 cm"))
-soil_temp$Treatment <- factor(soil_temp$Treatment, levels = c("ambient", "50% cover", "80% cover"))
-
 #Specify the Time column by month, date, year, and time
-soil_temp$Time <- mdy_hm(soil_temp$Time)
+soil_temp <- soil_temp_full %>% 
+  mutate(Date.Time = mdy_hm(soil_temp$Time)) %>%
+  separate(Date.Time, into = c('date', "time"), sep =' ', remove = FALSE)
+
+#Daily max, min, and mean
+soil_temp_summary <- soil_temp %>%
+  group_by(date, Depth, Treatment) %>%
+  summarize(maxtemp = as.numeric(max(Value)), mintemp = as.numeric(min(Value)), meantemp = as.numeric(mean(Value)))
+
+#Reorder factor levels
+soil_temp_summary$Depth <- factor(soil_temp_summary$Depth, levels = c("5 cm", "15 cm"))
+soil_temp_summary$Treatment <- factor(soil_temp_summary$Treatment, levels = c("ambient", "50% cover", "80% cover"))
+
+#Set date as class Date
+soil_temp_summary$date <- as.Date(soil_temp_summary$date)
 
 ### Visualize data
 #Timeseries
-ggplot(soil_temp, aes(Time, as.numeric(Value))) +
+ggplot(soil_temp_summary, aes(date, meantemp)) +
   geom_line(aes(color = Treatment)) +
-  facet_wrap(Depth~Treatment, ncol = 3)+
-  ylab(bquote(Soil~Temperature~(C^o)))+
+  #facet_wrap(~Depth, ncol = 1)+
+  ylab(bquote(Daily~Mean~Soil~Temperature~(C^o)))+
+  geom_hline(yintercept = 0, linetype = "dashed")+
+  scale_x_date(date_breaks = "month", date_labels = "%b")+
   theme(text = element_text(size=16),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -28,10 +40,7 @@ ggplot(soil_temp, aes(Time, as.numeric(Value))) +
         axis.line = element_line(colour = "black"),
         #legend.position = "none",
         axis.title = element_text(size = 14))+
-  scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
-#averages
-ggplot(soil_temp, aes(Treatment, as.numeric(Value)))+
-  geom_boxplot()+
-  facet_wrap(~Depth, ncol = 1)
-TukeyHSD(aov(Value~Treatment, soil_temp%>%filter(Depth == "5 cm")))
-TukeyHSD(aov(Value~Treatment, soil_temp%>%filter(Depth == "15 cm")))
+  scale_color_manual(name = "Treatment", values = c("#58CCED", "#F39C12", "#D35400"))
+
+
+

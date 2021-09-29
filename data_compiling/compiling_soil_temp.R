@@ -1,6 +1,3 @@
-#set data pathway
-datpath <- "C:/Users/Lina/Dropbox/Academics/Projects/Perennial Grasses Eastern Oregon/Data"
-
 library(tidyverse)
 
 #read in soil moisture data
@@ -102,7 +99,7 @@ STMay2021_23 <- read_csv(paste(datpath, "/Soil_temp/cleaned/May_2021/23temp.csv"
 STMay2021_24 <- read_csv(paste(datpath, "/Soil_temp/cleaned/May_2021/24temp.csv", sep=""))%>%
   mutate(ID = 24, Depth = "15 cm", Treatment = "80% cover")
 
-soil_temp <- full_join(STMar2021_1, STMar2021_2) %>%
+soil_temp_full <- full_join(STMar2021_1, STMar2021_2) %>%
   full_join(., STMar2021_3) %>%
   full_join(., STMar2021_4) %>%
   full_join(., STMar2021_5) %>%
