@@ -32,7 +32,7 @@ ggplot(soil_temp_summary, aes(date, meantemp)) +
   #facet_wrap(~Depth, ncol = 1)+
   ylab(bquote(Daily~Mean~Soil~Temperature~(C^o)))+
   geom_hline(yintercept = 0, linetype = "dashed")+
-  scale_x_date(date_breaks = "month", date_labels = "%b")+
+  scale_x_date(date_breaks = "month", date_labels = "%b", limits = c(as.Date("2021-01-01"), as.Date("2021-05-01")))+
   theme(text = element_text(size=16),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
