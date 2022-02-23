@@ -12,8 +12,8 @@ names(soil_mois)[1] <- "Time"
 
 #Tidy data into a long dataframe
 soil_mois_long <- soil_mois %>%
-  gather("Port 1", "Port 2", "Port 3", "Port 4", "Port 5", "Port 6", key = "Port", value = "VWC" ) %>%
-  select(Time, Port, VWC) %>%
+  pivot_longer(c("Port 1", "Port 2", "Port 3", "Port 4", "Port 5", "Port 6"), names_to = "Port", values_to = "VWC" ) %>%
+  #select(Time, Port, VWC) %>%
   mutate(Depth = ifelse(Port %in% c("Port 1", "Port 3", "Port 5"), "5 cm", "15 cm")) %>% #Make a column for soil depth
   mutate(Treatment = ifelse(Port %in% c("Port 1", "Port 2"), "50% cover", ifelse(Port %in% c("Port 3", "Port 4"), "80% cover", "ambient")))
 

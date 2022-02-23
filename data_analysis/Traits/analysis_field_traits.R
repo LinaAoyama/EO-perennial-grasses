@@ -10,7 +10,7 @@ field_traits1 <- field_traits %>%
   mutate(Site = if_else(Site %in% c("BLM", "Diamond"), "Steens", as.character(Site))) %>%
   mutate(site_groups = ifelse(Site %in% c("EOARC", "Steens", "ButteValleyNG"), "Cool",
                               ifelse(Site %in% c("Gund", "Fernley", "WaterCanyon"), "Warm", ""))) %>%
-  mutate(Site = factor(Site, levels = c("EOARC", "Steens", "ButteValleyNG", "WaterCanyon", "Gund", "Fernley"))) %>%
+  mutate(Site = factor(Site, levels = c("ButteValleyNG","Steens","EOARC",   "WaterCanyon", "Gund", "Fernley"))) %>%
   filter(Species %in% c("Poa secunda"))
 
 #Height by location
@@ -18,8 +18,8 @@ f1 <- ggplot(field_traits1, aes(Site, log(Height))) +
   geom_jitter(aes(color = site_groups)) +
   geom_boxplot(alpha = 0)+
   scale_color_manual(values= c("deepskyblue","orange")) +
-  theme(axis.text.x = element_blank(), 
-        axis.title.x = element_blank())+
+  #theme(axis.text.x = element_blank(), 
+        #axis.title.x = element_blank())+
   annotate("text", x = 1:4, y = 4.2, label = "a")+
   annotate("text", x = 5, y = 4.2, label = "b")
 
@@ -39,8 +39,8 @@ f3<- ggplot(field_traits1, aes(Site, log(SLA))) +
   geom_jitter(aes(color = site_groups)) +
   geom_boxplot(alpha = 0)+
   scale_color_manual(values= c("deepskyblue","orange")) +
-  theme(axis.text.x = element_blank(), 
-        axis.title.x = element_blank()) +
+  #theme(axis.text.x = element_blank(), 
+  #      axis.title.x = element_blank()) +
   annotate("text", x = 1:3, y = 8.5, label = "a")+
   annotate("text", x = 4, y = 8.5, label = "b") +
   annotate("text", x = 5, y = 8.5, label = "a")
