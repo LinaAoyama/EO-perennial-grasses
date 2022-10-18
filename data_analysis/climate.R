@@ -9,6 +9,7 @@ library(ggpubr) #combine plots
 library(vegan) #nmds
 library(corrplot) #correlation matrix
 library(dplyr)
+library(lubridate)
 
 #PCA of climate variables
 
@@ -37,3 +38,28 @@ ggplot(pca_climate_scores_lab, aes(x = PC1, y = PC2))+
   xlim(-2, 2.3)+
   xlab("PC1 (50.7%)")+
   ylab("PC2 (29.5%)")
+
+## Monthly precipitation at Riley Weather Station
+rain_monthly <- rain %>% 
+  mutate(Time = lubridate::mdy(rain$Time)) 
+rain_monthly$Type <- ordered(rain_monthly$Type, levels = c("actual", "30 yr average"))
+ggplot(rain_monthly, aes(x = Time, y = Precipitation_mm, col = Type, lty = Type))+
+  geom_rect(aes(xmin = as.Date("2020-09-01", "%Y-%m-%d"), 
+                xmax = as.Date("2021-09-01", "%Y-%m-%d"), 
+                ymin = -2, ymax = 45), fill = "#add8e6", alpha = 0.02)+
+  geom_rect(aes(xmin = as.Date("2021-09-01", "%Y-%m-%d"), 
+                xmax = as.Date("2022-08-01", "%Y-%m-%d"), 
+                ymin = -2, ymax = 45), fill = "#d6ecf3", alpha = 0.03)+
+  geom_point()+
+  geom_line(size = 1)+
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        legend.position = "right")+
+  ylab(bquote(Monthly~Total~Precipitation~(mm)))+
+  labs(col = "", lty = "")+
+  scale_color_manual(values=c("#000000",  "#808080"))
