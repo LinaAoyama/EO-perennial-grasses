@@ -4,4 +4,4 @@ datpath <- "C:/Users/Lina/Dropbox/Academics/Projects/Perennial Grasses Eastern O
 library(tidyverse)
 
 #read in stable isotope data
-isotope_data <- read_csv(paste(datpath, "/Stable Isotopes/cleaned_data/stable_isotope_2021.csv", sep=""))
+isotope_data <- read_csv(paste(datpath, "/Stable Isotopes/cleaned_data/stable_isotope_2021_2022.csv", sep=""))
