@@ -91,7 +91,7 @@ ggplot(soil_temp_summary, aes(date, meantemp)) +
         axis.line = element_line(colour = "black"),
         #legend.position = "none",
         axis.title = element_text(size = 14))+
-  scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
+  scale_color_manual(name = "Treatment", values = c("#F1C40F", "#F39C12", "#D35400"))
   
 #2022
 #daily min
@@ -243,7 +243,7 @@ mean2021 <- ggplot(soil_temp_summary, aes(date, meantemp)) +
         axis.line = element_line(colour = "black"),
         #legend.position = "none",
         axis.title = element_text(size = 14))+
-  scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
+  scale_color_manual(name = "Treatment", values = c("#F1C40F", "#F39C12", "#D35400"))
 mean2022 <- ggplot(soil_temp_summary, aes(date, meantemp)) +
   geom_line(aes(color = Treatment), size = 1) +
   facet_wrap(~Depth, ncol = 1)+
@@ -260,5 +260,5 @@ mean2022 <- ggplot(soil_temp_summary, aes(date, meantemp)) +
         axis.line = element_line(colour = "black"),
         #legend.position = "none",
         axis.title = element_text(size = 14))+
-  scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
+  scale_color_manual(name = "Treatment", values = c("#F1C40F", "#F39C12", "#D35400"))
 ggarrange(mean2021, mean2022, common.legend = TRUE)

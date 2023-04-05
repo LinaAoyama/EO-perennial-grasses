@@ -38,7 +38,7 @@ ggplot(soil_mois_long, aes(Time, as.numeric(VWC))) +
         axis.line = element_line(colour = "black"),
         #legend.position = "none",
         axis.title = element_text(size = 14))+
-  scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
+  scale_color_manual(name = "Treatment", values = c("#F1C40F", "#F39C12", "#D35400"))
 #averages
 ggplot(soil_mois_long, aes(Treatment, as.numeric(VWC)))+
   geom_boxplot()+

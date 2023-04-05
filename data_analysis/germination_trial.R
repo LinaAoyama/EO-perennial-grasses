@@ -64,7 +64,7 @@ ggplot(germ_trial_summary%>%filter(Week == "2"), aes(x = Temperature, y = mean_g
         panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         axis.title = element_text(size = 15),
         legend.position = "bottom")+
-  ylab(bquote(Germination~Rate))+
+  ylab(bquote(Mean~Germination~Rate))+
   xlab(bquote(Temperature*degree*C))+
   scale_color_manual( values = c("#01665E", "#5AB4AC" , "#C7EAE5","#F6E8C3","#D8B365", "#8C510A"  ))
 

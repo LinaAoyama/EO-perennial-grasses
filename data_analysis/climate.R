@@ -60,6 +60,6 @@ ggplot(rain_monthly, aes(x = Time, y = Precipitation_mm, col = Type, lty = Type)
         panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         axis.title = element_text(size = 15),
         legend.position = "right")+
-  ylab(bquote(Monthly~Total~Precipitation~(mm)))+
+  ylab(bquote(Monthly~Precipitation~(mm)))+
   labs(col = "", lty = "")+
   scale_color_manual(values=c("#000000",  "#808080"))

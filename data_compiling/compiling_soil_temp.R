@@ -1,6 +1,6 @@
 library(tidyverse)
 
-#read in soil moisture data
+#read in soil temp data
 STMar2021_1 <- read_csv(paste(datpath, "/Soil_temp/cleaned_data/March_2021/1temp.csv", sep=""))%>%
   mutate(ID = 1, Depth = "5 cm", Treatment = "80% cover")
 STMar2021_2 <- read_csv(paste(datpath, "/Soil_temp/cleaned_data/March_2021/2temp.csv", sep=""))%>%

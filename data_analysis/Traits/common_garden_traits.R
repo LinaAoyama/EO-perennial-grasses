@@ -44,45 +44,75 @@ ggplot(biomass_summary, aes(y = mean_biomass, x = Population)) +
 
 #Summarize SECOND YEAR PER CAPITA BIOMASS by population and PPT
 biomass_summary <- biomass %>%
-  drop_na() %>%
+  #drop_na() %>%
   group_by(Population, PPT_Treatment) %>%
   summarise(mean_biomass = mean(ELELY2_Biomass, na.rm = TRUE), 
             se_biomass = se(ELELY2_Biomass)) 
 biomass_summary$Population <- ordered(biomass_summary$Population, levels = c("Norc", "Vale","Susa", "Roar","Elko" ,"Litt"))
 
-#Visualize SECOND YEAR PER CAPITA BIOMASS by population and PPT
-ggplot(biomass_summary, aes(y = mean_biomass, x = Population, col = PPT_Treatment)) +
-  geom_point() +
-  geom_errorbar(aes(ymin = mean_biomass-se_biomass, ymax = mean_biomass+se_biomass), width = 0.4, alpha = 0.9, size = 1) +
-  theme(text = element_text(size=15),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"),
-        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
-        axis.title = element_text(size = 15),
-        legend.position = "bottom")+
-  facet_grid(~PPT_Treatment, scales="free")+
-  ylab(bquote(italic(E.~elymoides)~Year~2~per~capita~Biomass~(g)))+
-  labs(col = "Treatment")+
-  scale_color_manual(values=c("#F1C40F", "#F39C12", "#D35400"))
+#ANOVA SECOND YEAR BIOMASS
+summary(aov(ELELY2_Biomass ~ Population*PPT_Treatment, biomass))
+TukeyHSD(aov(ELELY2_Biomass ~ Population*PPT_Treatment, biomass))
 
-#ANOVA - FIRST YEAR HEIGHT
+#Visualize SECOND YEAR PER CAPITA BIOMASS by population and PPT
+f_biomass <- ggplot(biomass_summary, aes(y = mean_biomass, x = Population)) +
+                  geom_point(aes(col = PPT_Treatment)) +
+                  geom_errorbar(aes(ymin = mean_biomass-se_biomass, ymax = mean_biomass+se_biomass, col = PPT_Treatment), width = 0.4, alpha = 0.9, size = 1) +
+                  theme(text = element_text(size=15),
+                        panel.grid.major = element_blank(),
+                        panel.grid.minor = element_blank(),
+                        panel.background = element_blank(),
+                        axis.line = element_line(colour = "black"),
+                        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+                        axis.title = element_text(size = 15),
+                        axis.title.x = element_blank(),
+                        legend.position = "bottom")+
+                  facet_grid(~PPT_Treatment, scales="free")+
+                  ylab(bquote(Year~2~per~capita~Biomass~(g)))+
+                  labs(col = "Treatment")+
+                  scale_color_manual(values=c("#F1C40F", "#F39C12", "#D35400"))
+
+#annotate f_biomass
+dat_text1 <- data.frame(
+  label = c("a", "a", "a"),
+  PPT_Treatment   = factor(c("ambient"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 6),
+  y     = c(0.75, 0.75, 0.75)
+)
+dat_text2 <- data.frame(
+  label = c("a", "a", "a", "a", "a", "a"),
+  PPT_Treatment   = factor(c("moderate"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 3, 4, 5, 6),
+  y     = c(0.75, 0.75, 0.75, 0.75, 0.75,0.75)
+)
+dat_text3 <- data.frame(
+  label = c("a", "a", "a", "a", "a"),
+  PPT_Treatment   = factor(c("severe"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 3, 4, 6),
+  y     = c(0.75, 0.75, 0.75, 0.75, 0.75)
+)
+f_biomass_stats <- f_biomass+geom_text(data = dat_text1, mapping = aes(x = x, y = y, label = label))+
+  geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label))+
+  geom_text(data = dat_text3, mapping = aes(x = x, y = y, label = label))
+
+
+
+#ANOVA FIRST YEAR HEIGHT
 summary(aov(Height ~ Population*Year*PPT_Treatment*BRTE_Treatment, ht%>%filter(ELEL_YR=="1"))) #no significant difference by population but sig diff by year and ppt treatment
 
 #Summarize FIRST YEAR HEIGHT by year, population and PPT 
 ht_summary <- ht %>%
-  drop_na() %>%
-  filter(ELEL_YR=="1")%>%
-  group_by(Population, Year, PPT_Treatment) %>%
-  summarise(mean_Y1_ht = mean(Height, na.rm = TRUE), 
-            se_Y1_ht = se(Height)) 
+  #drop_na() %>%
+  #filter(ELEL_YR=="1")%>%
+  group_by(Population, Year, PPT_Treatment, ELEL_YR) %>%
+  summarise(mean_ht = mean(Height, na.rm = TRUE), 
+            se_ht = se(Height)) 
 ht_summary$Population <- ordered(ht_summary$Population, levels = c("Norc", "Vale","Susa", "Roar","Elko" ,"Litt"))
 
 #Visualize FIRST YEAR HEIGHT by year, population and PPT
-ggplot(ht_summary, aes(y = mean_Y1_ht, x = Population, col = PPT_Treatment)) +
+ggplot(ht_summary %>%filter(ELEL_YR == "1"), aes(y = mean_ht, x = Population, col = PPT_Treatment)) +
   geom_point() +
-  geom_errorbar(aes(ymin = mean_Y1_ht-se_Y1_ht, ymax = mean_Y1_ht+se_Y1_ht), width = 0.4, alpha = 0.9, size = 1) +
+  geom_errorbar(aes(ymin = mean_ht-se_ht, ymax = mean_ht+se_ht), width = 0.4, alpha = 0.9, size = 1) +
   theme(text = element_text(size=15),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -96,18 +126,62 @@ ggplot(ht_summary, aes(y = mean_Y1_ht, x = Population, col = PPT_Treatment)) +
   labs(col = "Treatment")+
   scale_color_manual(values=c("#F1C40F", "#F39C12", "#D35400"))
 
+#ANOVA SECOND YEAR HEIGHT
+summary(aov(Height ~ Population*PPT_Treatment, ht%>%filter(ELEL_YR == "2")))
+TukeyHSD(aov(Height ~ Population*PPT_Treatment, ht%>%filter(ELEL_YR == "2")))
+
+#Visualize SECOND YEAR HEIGHT by population and PPT
+f_height <- ggplot(ht_summary %>%filter(ELEL_YR == "2"), aes(y = mean_ht, x = Population)) +
+                  geom_point(aes(col = PPT_Treatment)) +
+                  geom_errorbar(aes(ymin = mean_ht-se_ht, ymax = mean_ht+se_ht, col = PPT_Treatment), width = 0.4, alpha = 0.9, size = 1) +
+                  theme(text = element_text(size=15),
+                        panel.grid.major = element_blank(),
+                        panel.grid.minor = element_blank(),
+                        panel.background = element_blank(),
+                        axis.line = element_line(colour = "black"),
+                        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+                        axis.title = element_text(size = 15),
+                        legend.position = "bottom")+
+                  facet_grid(~PPT_Treatment, scales="free")+
+                  ylab(bquote(Year~2~Height~(cm)))+
+                  labs(col = "Treatment")+
+                  scale_color_manual(values=c("#F1C40F", "#F39C12", "#D35400"))
+
+#annotate f_height
+dat_text1 <- data.frame(
+  label = c("a", "a", "a"),
+  PPT_Treatment   = factor(c("ambient"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 6),
+  y     = c(23, 23, 23)
+)
+dat_text2 <- data.frame(
+  label = c("a", "a", "a", "a", "a", "a"),
+  PPT_Treatment   = factor(c("moderate"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 3, 4, 5, 6),
+  y     = c(23, 23, 23, 23, 23, 23)
+)
+dat_text3 <- data.frame(
+  label = c("a", "a", "a", "a", "a"),
+  PPT_Treatment   = factor(c("severe"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 3, 4, 6),
+  y     = c(23, 23, 23, 23, 23)
+)
+f_height_stats <- f_height+geom_text(data = dat_text1, mapping = aes(x = x, y = y, label = label))+
+  geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label))+
+  geom_text(data = dat_text3, mapping = aes(x = x, y = y, label = label))
+
 #Summarize FIRST YEAR HEIGHT of 2022 only, population and PPT and BRTE
 ht_summary <- ht %>%
   drop_na() %>%
-  filter(ELEL_YR=="1")%>%
+  #filter(ELEL_YR=="1")%>%
   filter(Year == "2022")%>%
-  group_by(Population, BRTE_Treatment, PPT_Treatment) %>%
+  group_by(Population, BRTE_Treatment, PPT_Treatment, ELEL_YR) %>%
   summarise(mean_Y1_ht = mean(Height, na.rm = TRUE), 
             se_Y1_ht = se(Height)) 
 ht_summary$Population <- ordered(ht_summary$Population, levels = c("Norc", "Vale","Susa", "Roar","Elko" ,"Litt"))
 
 #Visualize FIRST YEAR HEIGHT of 2022 only, population and PPT and BRTE
-ggplot(ht_summary, aes(y = mean_Y1_ht, x = Population, col = BRTE_Treatment)) +
+ggplot(ht_summary %>% filter(ELEL_YR == "1"), aes(y = mean_Y1_ht, x = Population, col = BRTE_Treatment)) +
   geom_point() +
   geom_errorbar(aes(ymin = mean_Y1_ht-se_Y1_ht, ymax = mean_Y1_ht+se_Y1_ht), width = 0.4, alpha = 0.9, size = 1) +
   theme(text = element_text(size=15),
@@ -237,3 +311,5 @@ ggplot(LDMC_summary, aes(y = mean_Y2_ldmc, x = Population, col = PPT_Treatment))
   labs(col = "Treatment")+
   scale_color_manual(values=c("#F1C40F", "#F39C12", "#D35400"))
 
+#Fig Ht, Biomass, survival rate
+ggarrange(f_survival_stats, f_biomass_stats, f_height_stats, ncol = 1, align = "hv", common.legend = TRUE, labels = c("(a)", "(b)", "(c)"))
