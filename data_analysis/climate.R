@@ -69,6 +69,7 @@ ggplot(rain_monthly, aes(x = Time, y = Precipitation_mm, col = Type, lty = Type)
 weather_simple <- weather %>%
   filter(Site != "NGBER_2021")%>%
   filter(Site != "NGBER_2022")
+#monthly averages
 ggplot(weather_simple, aes(x =Month, y=PRCP_mm, col=Site))+
   geom_point()+
   geom_line()
@@ -81,3 +82,12 @@ ggplot(weather_simple, aes(x =Month, y=TMAX_C, col=Site))+
 ggplot(weather_simple, aes(x =Month, y=TMIN_C, col=Site))+
   geom_point()+
   geom_line()
+
+total_ppt <- weather%>%
+  group_by(Site)%>%
+  summarise(total_ppt = sum(PRCP_mm))
+
+July_temp <- weather %>%
+  filter(Month == 7) %>%
+  dplyr::select(Site, TAVG_C)
+
