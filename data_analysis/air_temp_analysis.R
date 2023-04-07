@@ -87,12 +87,15 @@ ggplot(air_temp_summary, aes(date, meantemp)) +
   scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
 
 ###Summarize monthly max, min, mean
-air_temp_monthly_summary <- air_temp %>%
+air_temp_monthly_summary <- air_temp%>%
   mutate(month = lubridate::month(ymd(air_temp$date)), year = lubridate::year(ymd(air_temp$date))) %>%
+  group_by(date, month, year, Treatment) %>%
+  summarize(maxtemp = as.numeric(max(Value)), mintemp = as.numeric(min(Value)), meantemp = as.numeric(mean(Value))) %>%
   group_by(month, year, Treatment) %>%
-  summarize(maxtemp = as.numeric(max(Value)), mintemp = as.numeric(min(Value)), meantemp = as.numeric(mean(Value)))
+  summarize(maxtemp = mean(maxtemp), mintemp = mean(mintemp), meantemp = mean(meantemp))
 
-write.csv(air_temp_monthly_summary, "C:/Users/Lina/Dropbox/Academics/Projects/Perennial Grasses Eastern Oregon/Data/Weather station/Treatment_monthly_weather.csv", row.names=FALSE)
+#write.csv(air_temp_monthly_summary, "C:/Users/Lina/Dropbox/Academics/Projects/Perennial Grasses Eastern Oregon/Data/Weather station/Treatment_monthly_air_temp.csv", row.names=FALSE)
+
 #Reorder factor levels
 air_temp_monthly_summary$Treatment <- factor(air_temp_monthly_summary$Treatment, levels = c("ambient", "moderate", "severe"))
 
@@ -132,3 +135,4 @@ ggplot(air_temp_monthly_summary, aes(month, maxtemp)) +
         #legend.position = "none",
         axis.title = element_text(size = 14))+
   scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
+

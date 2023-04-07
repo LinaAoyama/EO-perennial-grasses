@@ -43,5 +43,7 @@ ggplot(soil_mois_long, aes(Time, as.numeric(VWC))) +
 ggplot(soil_mois_long, aes(Treatment, as.numeric(VWC)))+
   geom_boxplot()+
   facet_wrap(~Depth, ncol = 1)
-summary(aov(VWC~Treatment, soil_mois_long%>%filter(Depth == "5 cm")))
-summary(aov(VWC~Treatment, soil_mois_long%>%filter(Depth == "15 cm")))
+
+soil_mois_avg <- soil_mois_long%>%
+  group_by(Depth, Treatment) %>%
+  summarise(mean = mean(as.numeric(VWC)))

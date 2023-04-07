@@ -63,3 +63,21 @@ ggplot(rain_monthly, aes(x = Time, y = Precipitation_mm, col = Type, lty = Type)
   ylab(bquote(Monthly~Precipitation~(mm)))+
   labs(col = "", lty = "")+
   scale_color_manual(values=c("#000000",  "#808080"))
+
+#Link weather and treatment to help us hypothesize which seed source should do better in ambient vs drought
+#remove NGBER_2021 and 2022
+weather_simple <- weather %>%
+  filter(Site != "NGBER_2021")%>%
+  filter(Site != "NGBER_2022")
+ggplot(weather_simple, aes(x =Month, y=PRCP_mm, col=Site))+
+  geom_point()+
+  geom_line()
+ggplot(weather_simple, aes(x =Month, y=TAVG_C, col=Site))+
+  geom_point()+
+  geom_line()
+ggplot(weather_simple, aes(x =Month, y=TMAX_C, col=Site))+
+  geom_point()+
+  geom_line()
+ggplot(weather_simple, aes(x =Month, y=TMIN_C, col=Site))+
+  geom_point()+
+  geom_line()
