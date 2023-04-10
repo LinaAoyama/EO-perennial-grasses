@@ -10,6 +10,7 @@ library(vegan) #nmds
 library(corrplot) #correlation matrix
 library(dplyr)
 library(lubridate)
+library(ggrepel) #add labels to pca
 
 #PCA of climate variables
 
@@ -89,5 +90,37 @@ total_ppt <- weather%>%
 
 July_temp <- weather %>%
   filter(Month == 7) %>%
-  dplyr::select(Site, TAVG_C)
+  dplyr::select(Site, TAVG_C, TMAX_C)
 
+March_temp <- weather %>%
+  filter(Month == 3) %>%
+  dplyr::select(Site, TAVG_C, TMAX_C, TMIN_C)
+
+#PCA of climate variables v2 with treatments
+
+climate_all_matrix <- as.matrix(climate_all[,2:6]) 
+pca_climate_all = rda(climate_all_matrix, scale = TRUE) #run PCA on all traits
+biplot(pca_climate_all, display = c("sites", "species"), type = c("text", "points")) #plot biplot
+pca_climate_scores_all <- as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
+pca_climate_scores_lab_all = as.data.frame(cbind(climate_all[,1],pca_climate_scores_all))  #add plot info back
+pca_climate_scores_lab_all$Site <- ordered(as.factor(pca_climate_scores_lab_all$Site), levels = c("Norc","NGBER","NGBER_ambient", "NGBER_moderate", "NGBER_severe", "Vale", "Susa",  "Roar",
+                                                                                                      "Elko", "Litt"))
+envout_all<-as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("species")))
+summary(pca_climate_all)
+ggplot(pca_climate_scores_lab_all, aes(x = PC1, y = PC2))+
+  geom_point(size = 4, aes(colour = Site), alpha = 0.5)+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15))+
+  geom_segment(data = envout_all, aes(x = 0, y = 0, xend = PC1, yend = PC2),
+               alpha = 0.5, size = 1, colour = "grey30") +
+  geom_text(data = envout_all, aes(x = PC1, y = PC2), colour = "grey30",
+            fontface = "bold", label = row.names(envout_all), size = 5)+
+  xlim(-2, 2.3)+
+  xlab("PC1 (47.8%)")+
+  ylab("PC2 (26.5%)")+
+  geom_text(aes(label=Site))
