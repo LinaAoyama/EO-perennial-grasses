@@ -12,7 +12,7 @@ library(dplyr)
 library(lubridate)
 library(ggrepel) #add labels to pca
 
-#PCA of climate variables
+#PCA of climate variables from PRISM
 
 climate_matrix <- as.matrix(climate[,2:ncol(climate)]) 
 pca_climate = rda(climate_matrix, scale = TRUE) #run PCA on all traits
@@ -96,7 +96,7 @@ March_temp <- weather %>%
   filter(Month == 3) %>%
   dplyr::select(Site, TAVG_C, TMAX_C, TMIN_C)
 
-#PCA of climate variables v2 with treatments
+#PCA of climate variables v2 with NOAA data
 
 climate_all_matrix <- as.matrix(climate_all[1:7,2:8]) 
 pca_climate_all = rda(climate_all_matrix, scale = TRUE) #run PCA on all traits
@@ -125,3 +125,53 @@ ggplot(pca_climate_scores_lab_all, aes(x = PC1, y = PC2))+
   #ylab("PC2 (24.0%)")+
   geom_text(aes(label=Site),vjust = 1.6)+
   labs(x=expression(atop("Cool" %<->% "Warm","PC1 (49.4%)")), y = expression(atop("Dry" %<->% "Wet","PC2 (24.0%)")))
+
+#Bar graphs with treatments
+bar_1 <- ggplot(climate_all, aes(x = reorder(Site, Tmax_03), y = Tmax_03))+
+  geom_bar(stat = "identity", width = 0.5, fill = "steelblue")+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_line(color = "lightgrey"),
+        panel.grid.minor = element_line(color = "lightgrey"),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        axis.text.x = element_text(angle = 45, hjust=1))+
+  labs(y = expression("March Maximum Air Temperature " (degree*C)), x = expression(atop("Cool" %<->% "Warm","Site")))
+
+bar_2 <- ggplot(climate_all, aes(x = reorder(Site, Days_above_90), y = Days_above_90))+
+  geom_bar(stat = "identity", width = 0.5, fill = "steelblue")+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_line(color = "lightgrey"),
+        panel.grid.minor = element_line(color = "lightgrey"),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        axis.text.x = element_text(angle = 45, hjust=1))+
+  labs(y = expression("Number of days above "*32~degree*C), x = expression(atop("Cool" %<->% "Warm","Site")))
+
+bar_3 <- ggplot(climate_all, aes(x = reorder(Site, PPT_annual), y = PPT_annual))+
+  geom_bar(stat = "identity", width =0.5, fill = "steelblue")+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_line(color = "lightgrey"),
+        panel.grid.minor = element_line(color = "lightgrey"),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        axis.text.x = element_text(angle = 45, hjust=1))+
+  labs(y = "Annual Precipitation (mm)", x = expression(atop("Dry" %<->% "Wet","Site")))
+
+bar_4 <- ggplot(climate_all, aes(x = reorder(Site, -Vpdmax_07), y = Vpdmax_07))+
+  geom_bar(stat = "identity", width = 0.5, fill = "steelblue")+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_line(color = "lightgrey"),
+        panel.grid.minor = element_line(color = "lightgrey"),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        axis.text.x = element_text(angle = 45, hjust=1))+
+  labs(y = "July Maximum Vapor Pressure Decifit (kPa)", x = expression(atop("Dry" %<->% "Wet","Site")))
+
