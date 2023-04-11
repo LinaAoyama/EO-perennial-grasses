@@ -98,12 +98,12 @@ March_temp <- weather %>%
 
 #PCA of climate variables v2 with treatments
 
-climate_all_matrix <- as.matrix(climate_all[,2:6]) 
+climate_all_matrix <- as.matrix(climate_all[1:7,2:8]) 
 pca_climate_all = rda(climate_all_matrix, scale = TRUE) #run PCA on all traits
 biplot(pca_climate_all, display = c("sites", "species"), type = c("text", "points")) #plot biplot
 pca_climate_scores_all <- as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
-pca_climate_scores_lab_all = as.data.frame(cbind(climate_all[,1],pca_climate_scores_all))  #add plot info back
-pca_climate_scores_lab_all$Site <- ordered(as.factor(pca_climate_scores_lab_all$Site), levels = c("Norc","NGBER","NGBER_ambient", "NGBER_moderate", "NGBER_severe", "Vale", "Susa",  "Roar",
+pca_climate_scores_lab_all = as.data.frame(cbind(climate_all[1:7,1],pca_climate_scores_all))  #add plot info back
+pca_climate_scores_lab_all$Site <- ordered(as.factor(pca_climate_scores_lab_all$Site), levels = c("Norc","NGBER","Vale", "Susa",  "Roar",
                                                                                                       "Elko", "Litt"))
 envout_all<-as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("species")))
 summary(pca_climate_all)
@@ -121,6 +121,7 @@ ggplot(pca_climate_scores_lab_all, aes(x = PC1, y = PC2))+
   geom_text(data = envout_all, aes(x = PC1, y = PC2), colour = "grey30",
             fontface = "bold", label = row.names(envout_all), size = 5)+
   xlim(-2, 2.3)+
-  xlab("PC1 (47.8%)")+
-  ylab("PC2 (26.5%)")+
-  geom_text(aes(label=Site))
+  #xlab("PC1 (49.4%)")+
+  #ylab("PC2 (24.0%)")+
+  geom_text(aes(label=Site),vjust = 1.6)+
+  labs(x=expression(atop("Cool" %<->% "Warm","PC1 (49.4%)")), y = expression(atop("Dry" %<->% "Wet","PC2 (24.0%)")))
