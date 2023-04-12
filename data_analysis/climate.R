@@ -175,3 +175,19 @@ bar_4 <- ggplot(climate_all, aes(x = reorder(Site, -Vpdmax_07), y = Vpdmax_07))+
         axis.text.x = element_text(angle = 45, hjust=1))+
   labs(y = "July Maximum Vapor Pressure Decifit (kPa)", x = expression(atop("Dry" %<->% "Wet","Site")))
 
+ggplot(climate_all, aes(x = Days_above_90, y = Tmax_03))+
+  geom_point()+
+  theme_bw()+
+  geom_text(aes(label=Site),vjust = 1.6)+
+  ylim(8, 16.5)+
+  xlim(9, 60)+
+  labs(x = expression("Number of days above "*32~degree*C), y = expression("March Maximum Air Temperature " (degree*C)))
+  
+ggplot(climate_all, aes(x = Vpdmax_07, y = PPT_annual))+
+  geom_point()+
+  theme_bw()+
+  geom_text(aes(label=Site),vjust = 1.6)+
+  ylim(100, 375)+
+  xlim(31, 44)+
+  labs(x = "July Maximum Vapor Pressure Deficit (kPa)", 
+       y = "Annual Precipitation (mm)")
