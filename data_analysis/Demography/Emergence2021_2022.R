@@ -294,6 +294,57 @@ f_survival_stats <- f_survival+geom_text(data = dat_text1, mapping = aes(x = x, 
   geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label))+
   geom_text(data = dat_text3, mapping = aes(x = x, y = y, label = label))
 
+#Summarize SECOND YEAR DENSITY by population and PPT 
+second_dens_summary <- emergence %>%
+  filter(Month == "Jul") %>%
+  filter(Year == "2022") %>%
+  mutate(survival = ELELY2EMG/0.0625)%>%
+  group_by(Year, Population, PPT_Treatment) %>%
+  summarise(mean_survival_Y2 = mean(survival, na.rm = TRUE),
+            se_survival_Y2 = se(survival)) 
+second_dens_summary$Population <- ordered(second_dens_summary$Population, levels = c("Norc", "Vale","Susa", "Roar","Elko" ,"Litt"))
+
+#Visualize SECOND YEAR SURVIVAL by population and PPT
+f_second_dens <- ggplot(second_dens_summary, aes(y = mean_survival_Y2, x = Population)) +
+  geom_point(aes(col = PPT_Treatment)) +
+  geom_errorbar(aes(ymin = mean_survival_Y2-se_survival_Y2, ymax = mean_survival_Y2+se_survival_Y2, col = PPT_Treatment), width = 0.4, alpha = 0.9, size = 1) +
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        axis.title.x = element_blank(),
+        legend.position = "bottom")+
+  facet_grid(~PPT_Treatment, scales="free")+
+  ylab(expression(Year~2~Density~(individual/m^2)))+
+  labs(col = "Treatment")+
+  scale_color_manual(values=c("#34cfeb", "#ebcf34", "#eb6734"))
+
+#annotate f_second_dens
+dat_text4 <- data.frame(
+  label = c("a", "a", "a", "a", "a", "a"),
+  PPT_Treatment   = factor(c("ambient"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 3, 4, 5, 6),
+  y     = 40
+)
+dat_text5 <- data.frame(
+  label = c("a", "b", "a", "a", "a", "b"),
+  PPT_Treatment   = factor(c("moderate"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 3, 4, 5, 6),
+  y     = 40
+)
+dat_text6 <- data.frame(
+  label = c("a", "a", "a", "a", "a", "a"),
+  PPT_Treatment   = factor(c("severe"), levels = c( "ambient", "moderate", "severe")),
+  x     = c(1, 2, 3, 4, 5, 6),
+  y     = 40
+)
+f_second_dens_stats <- f_second_dens+geom_text(data = dat_text4, mapping = aes(x = x, y = y, label = label))+
+  geom_text(data = dat_text5, mapping = aes(x = x, y = y, label = label))+
+  geom_text(data = dat_text6, mapping = aes(x = x, y = y, label = label))
+
 #Summarize SECOND YEAR SURVIVAL by population, PPT x BRTE
 survival_summary <- emergence %>%
   filter(Month == "Jul") %>%
