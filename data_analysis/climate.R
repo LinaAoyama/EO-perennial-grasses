@@ -209,3 +209,130 @@ f_climate2 <- ggplot(climate_all, aes(x = Vpdmax_07, y = PPT_annual))+
        y = "Annual Precipitation (mm)")
 
 ggarrange(f_climate1, f_climate2, ncol = 2, labels = c("(a)", "(b)"), align = "h", common.legend = TRUE)
+
+#Climate data from seedlot selection tool (USFS)
+#run PCA on USFS climate matrix
+USFS_climate_matrix <- as.matrix(USFS_climate[,2:12]) 
+pca_USFS_climate = rda(USFS_climate_matrix, scale = TRUE) 
+biplot(pca_USFS_climate, display = c("sites", "species"), type = c("text", "points")) #plot biplot
+pca_USFS_climate_scores <- as.data.frame(scores(pca_USFS_climate, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
+pca_USFS_climate_scores_lab = as.data.frame(cbind(USFS_climate[,1],pca_USFS_climate_scores))  #add plot info back
+pca_USFS_climate_scores_lab$Site <- ordered(as.factor(pca_USFS_climate_scores_lab$Site), levels = c("Norc","NGBER", "Vale", "Susa", "Roar", "Elko", "Litt"))
+envout_USFS<-as.data.frame(scores(pca_USFS_climate, choices=c(1,2), display=c("species")))
+summary(pca_USFS_climate)
+#visualize PCA plot
+ggplot(pca_USFS_climate_scores_lab, aes(x = PC1, y = PC2))+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15))+
+  geom_segment(data = envout_USFS, aes(x = 0, y = 0, xend = PC1, yend = PC2),
+               alpha = 0.5, size = 1, colour = "#a9a9a9") +
+  geom_text(data = envout_USFS, aes(x = PC1, y = PC2), colour = "#3C486B",
+            fontface = "bold", label = row.names(envout_USFS), size = 4)+
+  geom_point(size = 4, aes(colour = Site), alpha = 0.5)+
+  scale_color_discrete(name = "Site", labels = c("Norcross", "NGBER (common garden)", "Vale", "Susanville", "Roaring Springs", "Elko", "Little Sahara"))+
+  xlim(-2, 2.2)+
+  ylim(-2.3, 1.3)+
+  geom_text(aes(label=Site),vjust = 1.6, size = 4)+
+  labs(x=expression(atop("Dry, warm " %<->% "Wet, cool","PC1 (61.8%)")), y = expression(atop("Longer growing season" %<->% "Shorter growing season","PC2 (22.6%)")))
+
+#Early and Late growing season PCA plots with NOAA data
+#run PCA on Early season climate matrix
+Early_climate <- Grw_climate %>% filter(Growing_Season == "Early")
+Early_climate_matrix <- as.matrix(Early_climate[3:9,3:6]) 
+pca_Early_climate = rda(Early_climate_matrix, scale = TRUE) 
+biplot(pca_Early_climate, display = c("sites", "species"), type = c("text", "points")) #plot biplot
+pca_Early_climate_scores <- as.data.frame(scores(pca_Early_climate, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
+pca_Early_climate_scores_lab = as.data.frame(cbind(Early_climate[3:9,1],pca_Early_climate_scores))  #add plot info back
+pca_Early_climate_scores_lab$Site <- ordered(as.factor(pca_Early_climate_scores_lab$Site), levels = c("Norc","NGBER", "Vale", "Susa", "Roar", "Elko", "Litt"))
+envout_Early<-as.data.frame(scores(pca_Early_climate, choices=c(1,2), display=c("species")))
+summary(pca_Early_climate)
+#visualize PCA plot
+f_Early <- ggplot(pca_Early_climate_scores_lab, aes(x = PC1, y = PC2))+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15))+
+  geom_segment(data = envout_Early, aes(x = 0, y = 0, xend = PC1, yend = PC2),
+               alpha = 0.5, size = 1, colour = "#a9a9a9") +
+  geom_text(data = envout_Early, aes(x = PC1, y = PC2), colour = "#3C486B",
+            fontface = "bold", label = row.names(envout_Early), size = 4)+
+  geom_point(size = 4, aes(colour = Site), alpha = 0.5)+
+  scale_color_discrete(name = "Site", labels = c("Norcross", "NGBER (common garden)", "Vale", "Susanville", "Roaring Springs", "Elko", "Little Sahara"))+
+  xlim(-2, 2.2)+
+  ylim(-2.3, 1.3)+
+  geom_text(aes(label=Site),vjust = 1.6, size = 4)+
+  labs(x=expression("PC1 (73.0%)"), y = expression("PC2 (16.7%)"),
+       title = "Early Growing Season (September-March)")
+
+#run PCA on Late season climate matrix
+Late_climate <- Grw_climate %>% filter(Growing_Season == "Late")
+Late_climate_matrix <- as.matrix(Late_climate[3:9,3:6]) 
+pca_Late_climate = rda(Late_climate_matrix, scale = TRUE) 
+biplot(pca_Late_climate, display = c("sites", "species"), type = c("text", "points")) #plot biplot
+pca_Late_climate_scores <- as.data.frame(scores(pca_Late_climate, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
+pca_Late_climate_scores_lab = as.data.frame(cbind(Late_climate[3:9,1],pca_Late_climate_scores))  #add plot info back
+pca_Late_climate_scores_lab$Site <- ordered(as.factor(pca_Late_climate_scores_lab$Site), levels = c("Norc","NGBER", "Vale", "Susa", "Roar", "Elko", "Litt"))
+envout_Late<-as.data.frame(scores(pca_Late_climate, choices=c(1,2), display=c("species")))
+summary(pca_Late_climate)
+#visualize PCA plot
+f_Late <- ggplot(pca_Late_climate_scores_lab, aes(x = PC1, y = PC2))+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15))+
+  geom_segment(data = envout_Late, aes(x = 0, y = 0, xend = PC1, yend = PC2),
+               alpha = 0.5, size = 1, colour = "#a9a9a9") +
+  geom_text(data = envout_Late, aes(x = PC1, y = PC2), colour = "#3C486B",
+            fontface = "bold", label = row.names(envout_Late), size = 4)+
+  geom_point(size = 4, aes(colour = Site), alpha = 0.5)+
+  scale_color_discrete(name = "Site", labels = c("Norcross", "NGBER (common garden)", "Vale", "Susanville", "Roaring Springs", "Elko", "Little Sahara"))+
+  xlim(-1.8, 1.5)+
+  ylim(-1.5, 1.8)+
+  geom_text(aes(label=Site),vjust = 1.6, size = 4)+
+  labs(x=expression("PC1 (69.2%)"), y = expression("PC2 (26.8%)"), 
+       title = "Late Growing Season (April-July)")
+
+ggarrange(f_Early, f_Late, common.legend = TRUE)
+
+
+#Climate data from NOAA and PRISM mixed dataset
+#run PCA on mixed climate matrix
+climate_mix_matrix <- as.matrix(mix_climate[,2:8]) 
+pca_mix_climate = rda(climate_mix_matrix, scale = TRUE) 
+biplot(pca_mix_climate, display = c("sites", "species"), type = c("text", "points")) #plot biplot
+pca_mix_climate_scores <- as.data.frame(scores(pca_mix_climate, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
+pca_mix_climate_scores_lab = as.data.frame(cbind(mix_climate[,1],pca_mix_climate_scores))  #add plot info back
+pca_mix_climate_scores_lab$Site <- ordered(as.factor(pca_mix_climate_scores_lab$Site), levels = c("Norc","NGBER", "Vale", "Susa", "Roar", "Elko", "Litt"))
+envout_mix<-as.data.frame(scores(pca_mix_climate, choices=c(1,2), display=c("species")))
+summary(pca_mix_climate)
+#visualize PCA plot
+ggplot(pca_mix_climate_scores_lab, aes(x = PC1, y = PC2))+
+  theme(text = element_text(size=18),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15))+
+  geom_segment(data = envout_mix, aes(x = 0, y = 0, xend = PC1, yend = PC2),
+               alpha = 0.5, size = 1, colour = "#a9a9a9") +
+  geom_text(data = envout_mix, aes(x = PC1, y = PC2), colour = "#3C486B",
+            fontface = "bold", label = row.names(envout_mix), size = 4)+
+  geom_point(size = 4, aes(colour = Site), alpha = 0.5)+
+  scale_color_discrete(name = "Site", labels = c("Norcross", "NGBER (common garden)", "Vale", "Susanville", "Roaring Springs", "Elko", "Little Sahara"))+
+  #xlim(-2, 2.2)+
+  #ylim(-2.3, 1.3)+
+  geom_text(aes(label=Site),vjust = 1.6, size = 4)+
+  labs(x=expression(atop("Dry, warm " %<->% "Wet, cool","PC1 (48.1%)")), y = expression(atop("Longer growing season" %<->% "Shorter growing season","PC2 (26.8%)")))
+

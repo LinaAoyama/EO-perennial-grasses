@@ -9,11 +9,11 @@ isotope <- isotope_data %>%
   filter(Treatment != "seed")
 
 #Delta 13C by population and time
-p1 <- ggplot(isotope, aes(x = Population, y = delta_13C)) +
+p1 <- ggplot(isotope %>% filter(Time != "June_2021"), aes(x = Population, y = delta_13C)) +
   geom_jitter(aes(color = Treatment)) +
   geom_boxplot(alpha = 0)+
   facet_grid(~Time)+
-  scale_color_manual(values=c("#F1C40F", "#F39C12", "#D35400"))+
+  scale_color_manual(values=c("#34cfeb", "#ebcf34", "#eb6734"))+
   theme(text = element_text(size=15),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
@@ -21,8 +21,9 @@ p1 <- ggplot(isotope, aes(x = Population, y = delta_13C)) +
       axis.line = element_line(colour = "black"),
       panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
       axis.title = element_text(size = 15),
-      legend.position = "right")+
-  ylab(bquote(Delta^13*C))
+      legend.position = "top")+
+  ylab(bquote(Delta^13*C))+
+  xlab("Seed Source")
 
 #2021: Overall lower delta 13C in July than June. No sig difference by population in either June or July
 summary(aov(delta_13C ~ Population*Month, isotope%>%filter(Year == "2021"))) #lower delta C in July than June
@@ -45,16 +46,15 @@ dat_text2 <- data.frame(
   label = c("a", "a", "a", "a", "a", "a"),
   Time   = factor(c("July_2021"), levels = c( "June_2021", "July_2021", "July_2022")),
   x     = c(1, 2, 3, 4, 5, 6),
-  y     = c(-24, -24,-24, -24, -24, -24)
+  y     = -24.5
 )
 dat_text3 <- data.frame(
   label = c("ab", "a", "a", "ab", "ab", "b"),
   Time   = factor(c("July_2022"),levels = c( "June_2021", "July_2021", "July_2022")),
   x     = c(1, 2, 3, 4, 5, 6),
-  y     = c(-24, -24,-24, -24, -24, -24)
+  y     = -24.5
 )
-p1+geom_text(data = dat_text1, mapping = aes(x = x, y = y, label = label))+
-  geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label))+
+p1+geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label))+
   geom_text(data = dat_text3, mapping = aes(x = x, y = y, label = label))
 
 
