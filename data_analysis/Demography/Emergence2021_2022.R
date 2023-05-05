@@ -102,7 +102,7 @@ summary(aov(ELELY1EMG ~ Population*Year*PPT_Treatment*BRTE_Treatment, emergence)
 cumulative <- emergence %>%
   group_by(Block, Site, Year, Subplot, Population, PPT_Treatment) %>%
   summarise(cum_mortality = sum(ELELY1MOR), 
-            total_emerg = max(ELELY1EMG)/0.0625)
+            total_emerg = max(ELELY1EMG)*4)
 cumulative_summary <- cumulative %>%
   group_by(Population, PPT_Treatment, Year) %>%
   summarise(mean_mortality_Y1 = mean(cum_mortality, na.rm = TRUE),
@@ -193,7 +193,7 @@ f_cum_emergence_stats <- f_cum_emergence+geom_text(data = dat_text1, mapping = a
 #Summarize FIRST YEAR ESTABLISHMENT DENSITY by population and PPT 
 establishment_summary <- emergence %>%
   filter(Month == "Jul") %>%
-  mutate(establishment = ELELY1EMG/0.0625)%>%
+  mutate(establishment = ELELY1EMG*4)%>%
   group_by(Year, Population, PPT_Treatment) %>%
   summarise(mean_est_Y1 = mean(establishment, na.rm = TRUE),
             se_est_Y1 = se(establishment)) 
@@ -414,7 +414,7 @@ f_establish_stats <- f_establish+geom_text(data = dat_text1, mapping = aes(x = x
 second_dens_summary <- emergence %>%
   filter(Month == "Jul") %>%
   filter(Year == "2022") %>%
-  mutate(survival = ELELY2EMG/0.0625)%>%
+  mutate(survival = ELELY2EMG*4)%>%
   group_by(Year, Population, PPT_Treatment) %>%
   summarise(mean_survival_Y2 = mean(survival, na.rm = TRUE),
             se_survival_Y2 = se(survival)) 
@@ -432,8 +432,8 @@ TukeyHSD(aov(survival ~ Population*PPT_Treatment, emergence %>%
 
 #Visualize SECOND YEAR DENSITY by population and PPT
 f_second_dens <- ggplot(second_dens_summary, aes(y = mean_survival_Y2, x = Population)) +
-  geom_point(aes(col = PPT_Treatment)) +
-  geom_errorbar(aes(ymin = mean_survival_Y2-se_survival_Y2, ymax = mean_survival_Y2+se_survival_Y2, col = PPT_Treatment), width = 0.4, alpha = 0.9, size = 1) +
+  geom_point() +
+  geom_errorbar(aes(ymin = mean_survival_Y2-se_survival_Y2, ymax = mean_survival_Y2+se_survival_Y2), width = 0.4, alpha = 0.9, size = 1) +
   theme(text = element_text(size=15),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -441,31 +441,31 @@ f_second_dens <- ggplot(second_dens_summary, aes(y = mean_survival_Y2, x = Popul
         axis.line = element_line(colour = "black"),
         panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
         axis.title = element_text(size = 15),
-        legend.position = "bottom")+
+        legend.position = "right")+
   facet_grid(~PPT_Treatment, scales="free")+
   ylab(expression(Year~2~Density~(individual/m^2)))+
   xlab("Seed Source")+
-  labs(col = "Treatment")+
-  scale_color_manual(values=c("#34cfeb", "#ebcf34", "#eb6734"))
+  labs(col = "Treatment")
+  #scale_color_manual(values=c("#34cfeb", "#ebcf34", "#eb6734"))
 
 #annotate f_second_dens
 dat_text4 <- data.frame(
   label = c("a", "a", "a", "a", "a", "a"),
   PPT_Treatment   = factor(c("ambient"), levels = c( "ambient", "moderate", "severe")),
   x     = c(1, 2, 3, 4, 5, 6),
-  y     = 45
+  y     = 10
 )
 dat_text5 <- data.frame(
   label = c("a", "b", "a", "a", "a", "b"),
   PPT_Treatment   = factor(c("moderate"), levels = c( "ambient", "moderate", "severe")),
   x     = c(1, 2, 3, 4, 5, 6),
-  y     = 45
+  y     = 10
 )
 dat_text6 <- data.frame(
   label = c("a", "a", "a", "a", "a", "a"),
   PPT_Treatment   = factor(c("severe"), levels = c( "ambient", "moderate", "severe")),
   x     = c(1, 2, 3, 4, 5, 6),
-  y     = 45
+  y     = 10
 )
 
 f_second_dens_stats <- f_second_dens+geom_text(data = dat_text4, mapping = aes(x = x, y = y, label = label))+
@@ -475,3 +475,51 @@ f_second_dens_stats <- f_second_dens+geom_text(data = dat_text4, mapping = aes(x
 #Combine 1st YR total emergence, 1st YR Density, 2nd YR Density plots
 ggarrange(f_cum_emergence_stats, f_establish_stats, f_second_dens_stats, ncol = 1, nrow = 3, 
           common.legend = TRUE)
+
+
+#ONLY 2021 for presentation
+first_yr_summary <- left_join(cumulative_summary, establishment_summary)
+f_first_yr <- ggplot(first_yr_summary %>% filter(Year == 2021), aes(x = Population)) +
+  geom_point(aes(y = mean_max_emerg), color = "grey") +
+  geom_errorbar(aes(ymin = mean_max_emerg-se_max_emerg, ymax = mean_max_emerg+se_max_emerg), 
+                width = 0.4, alpha = 0.9, size = 1, color = "grey") +
+  geom_point(aes(y = mean_est_Y1), color = "black") +
+  geom_errorbar(aes(ymin = mean_est_Y1-se_est_Y1, ymax = mean_est_Y1+se_est_Y1), 
+                width = 0.4, alpha = 0.9, size = 1, color = "black") +
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        axis.title.x = element_blank(),
+        legend.position = "right")+
+  facet_grid(~PPT_Treatment, scales="free")+
+  ylab(expression(Year~1~Density~(individual/m^2)))
+  #ylim(0, 50)+
+  #labs(col = "Treatment")+
+  #scale_color_manual(values=c("#34cfeb", "#ebcf34", "#eb6734"))
+
+#First year total emergence and July survival by cohorts
+f_first_yr_cohorts <- ggplot(first_yr_summary, aes(x = Population)) +
+  geom_point(aes(y = mean_max_emerg), color = "grey") +
+  geom_errorbar(aes(ymin = mean_max_emerg-se_max_emerg, ymax = mean_max_emerg+se_max_emerg), 
+                width = 0.4, alpha = 0.9, size = 1, color = "grey") +
+  geom_point(aes(y = mean_est_Y1), color = "black") +
+  geom_errorbar(aes(ymin = mean_est_Y1-se_est_Y1, ymax = mean_est_Y1+se_est_Y1), 
+                width = 0.4, alpha = 0.9, size = 1, color = "black") +
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 15),
+        axis.title.x = element_blank(),
+        legend.position = "right")+
+  facet_grid(Year~PPT_Treatment, scales="free")+
+  ylab(expression(Year~1~Density~(individual/m^2)))
+#ylim(0, 50)+
+#labs(col = "Treatment")+
+#scale_color_manual(values=c("#34cfeb", "#ebcf34", "#eb6734"))
