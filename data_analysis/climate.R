@@ -108,16 +108,16 @@ March_temp <- weather %>%
 #PCA of climate variables v2 with NOAA data
 #check for multicollinearity
 pairs(~Days_below_32+Days_above_90+Tmin_03+Tmax_03+Tmax_07+PPT_annual+Vpdmax_07, climate_all)
-climate_all_matrix <- as.matrix(climate_all[,2:8]) 
+climate_all_matrix <- as.matrix(climate_all_redo[,2:7]) 
 corr_mat=cor(climate_all_matrix, method = "s")
 corrplot(corr_mat, method = 'number') #Tmax_07 and Tmax_03 corr 0.75; Days_below_32 and Tmin_03 corr -0.96 
-climate_all_simple <- subset(climate_all_matrix, select = -c(Tmax_03, Days_below_32)) #remove Tmax-03 and Days-below-32
+climate_all_simple <- subset(decostand(climate_all_matrix, "standardize"), select = -c( Days_above_90)) #remove Tmax-03 and Days-below-32
 #run PCA on reduced matrix
-pca_climate_all = rda(climate_all_simple[1:7,], scale = TRUE) 
+pca_climate_all = rda(climate_all_simple[1:7,], scale = FALSE) 
 biplot(pca_climate_all, display = c("sites", "species"), type = c("text", "points")) #plot biplot
 pca_climate_scores_all <- as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
-pca_climate_scores_lab_all = as.data.frame(cbind(climate_all[1:7,1],pca_climate_scores_all))  #add plot info back
-pca_climate_scores_lab_all$Site <- ordered(as.factor(pca_climate_scores_lab_all$Site), levels = c("Norc","NGBER", "Vale", "Susa", "Roar", "Elko", "Litt"))
+pca_climate_scores_lab_all = as.data.frame(cbind(climate_all_redo[1:7,1],pca_climate_scores_all))  #add plot info back
+pca_climate_scores_lab_all$Site <- ordered(as.factor(pca_climate_scores_lab_all$Site), levels = c("Norcross","NGBER","Roaring Springs", "Vale", "Susanville", "Elko", "Little Sahara"))
 envout_all<-as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("species")))
 summary(pca_climate_all)
 #visualize PCA plot
@@ -132,13 +132,13 @@ ggplot(pca_climate_scores_lab_all, aes(x = PC1, y = PC2))+
   geom_segment(data = envout_all, aes(x = 0, y = 0, xend = PC1, yend = PC2),
                alpha = 0.5, size = 1, colour = "#a9a9a9") +
   geom_text(data = envout_all, aes(x = PC1, y = PC2), colour = "#3C486B",
-            fontface = "bold", label = c("Annual Precip", "July Max Temp", "July Max VPD", "March Min Temp", "Days > 90F"), size = 4)+
+            fontface = "bold", label = c("Annual Precip", "Late Season Avg Temp","July Max VPD", "Early Season Avg Temp", "Days below 0C"), size = 4)+
   geom_point(size = 4, aes(colour = Site), alpha = 0.5)+
-  scale_color_discrete(name = "Site", labels = c("Norcross", "NGBER (common garden)", "Vale", "Susanville", "Roaring Springs", "Elko", "Little Sahara"))+
+  #scale_color_discrete(name = "Site", labels = c("Norcross", "NGBER (common garden)", "Vale", "Susanville", "Roaring Spring", "Elko", "Little Sahara"))+
   xlim(-2, 2.3)+
-  ylim(-1.3, 1.8)+
+  ylim(-1.7, 2)+
   geom_text(aes(label=Site),vjust = 1.6, size = 4)+
-  labs(x=expression(atop("Warm" %<->% "Cool","PC1 (45.1%)")), y = expression(atop("Dry" %<->% "Wet","PC2 (28.0%)")))
+  labs(x=expression(atop("Cool" %<->% "Warm","PC1 (51.2%)")), y = expression(atop("Dry" %<->% "Wet","PC2 (26.2%)")))
 
 #Bar graphs with treatments
 bar_1 <- ggplot(climate_all, aes(x = reorder(Site, Tmax_03), y = Tmax_03))+
