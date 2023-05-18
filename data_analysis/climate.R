@@ -94,17 +94,125 @@ ggplot(weather_simple, aes(x =Month, y=TMIN_C, col=Site))+
   geom_point()+
   geom_line()
 
-total_ppt <- weather%>%
-  group_by(Site)%>%
-  summarise(total_ppt = sum(PRCP_mm))
+NOAA_weather$Site <- ordered(NOAA_weather$Site, levels = c("Norc","NGBER", "NGBER_moderate", "NGBER_severe", "Roar", "Susa","Litt"  ,"Elko" , "Vale"))
 
-July_temp <- weather %>%
-  filter(Month == 7) %>%
-  dplyr::select(Site, TAVG_C, TMAX_C)
+f_PPT_30YR <- ggplot(NOAA_weather %>% filter(WaterYear == "30-YR"), aes(x = as.factor(Month), y = PRCP_mm, col = Site))+
+  geom_point()+
+  geom_line(aes(x = as.numeric(Month)))+
+  labs(x = "Month", y = "Monthly Mean Precipitation (mm)")+
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 12))+
+  scale_color_manual(name = "Site", 
+                       labels = c("Norcross", "NGBER (common garden)", "NGBER 36% reduction", "NGBER 62% reduction", 
+                                                 "Roaring Spring", "Susanville", "Little Sahara" ,"Elko", "Vale" ),
+                       values = c("#4f4f4f", "#34cfeb", "#ebcf34", "#eb6734", 
+                                  "#5f5f5f", "#6f6f6f", "#7e7e7e" , "#8e8e8e", "#9e9e9e"))+
+  ylim(0, 110)+
+  annotate("text", x = 3.4, y = 106, label = "a) 30 Year Mean", size = 5)
 
-March_temp <- weather %>%
-  filter(Month == 3) %>%
-  dplyr::select(Site, TAVG_C, TMAX_C, TMIN_C)
+f_PPT_2021 <- ggplot(NOAA_weather %>% filter(WaterYear == 2021) , aes(x = as.factor(Month), y = PRCP_mm, col = Site))+
+  geom_point()+
+  geom_line(aes(x = as.numeric(Month)))+
+  labs(x = "Month", y = "Monthly Precipitation (mm)")+
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 12))+
+  scale_color_manual(name = "Site", 
+                     labels = c("Norcross", "NGBER (common garden)", "NGBER 36% reduction", "NGBER 62% reduction", 
+                                "Roaring Spring", "Susanville", "Little Sahara" ,"Elko", "Vale" ),
+                     values = c("#4f4f4f", "#34cfeb", "#ebcf34", "#eb6734", 
+                                "#5f5f5f", "#6f6f6f", "#7e7e7e" , "#8e8e8e", "#9e9e9e"))+
+  ylim(0, 110)+
+  annotate("text", x = 3, y = 106, label = "c) 2020-2021", size = 5)
+
+f_PPT_2022 <- ggplot(NOAA_weather %>% filter(WaterYear == 2022) , aes(x = as.factor(Month), y = PRCP_mm, col = Site))+
+  geom_point()+
+  geom_line(aes(x = as.numeric(Month)))+
+  labs(x = "Month", y = "Monthly Precipitation (mm)")+
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 12))+
+  scale_color_manual(name = "Site", 
+                     labels = c("Norcross", "NGBER (common garden)", "NGBER 36% reduction", "NGBER 62% reduction", 
+                                "Roaring Spring", "Susanville", "Little Sahara" ,"Elko", "Vale" ),
+                     values = c("#4f4f4f", "#34cfeb", "#ebcf34", "#eb6734", 
+                                "#5f5f5f", "#6f6f6f", "#7e7e7e" , "#8e8e8e", "#9e9e9e"))+
+  ylim(0, 110)+
+  annotate("text", x = 3, y = 106, label = "e) 2021-2022", size = 5)
+
+f_TAVG_30YR <- ggplot(NOAA_weather %>% filter(WaterYear == "30-YR") %>% filter(Site != "NGBER_moderate") %>% filter(Site != "NGBER_severe"), aes(x = as.factor(Month), y = as.numeric(TAVG_C), col = Site))+
+  geom_point()+
+  geom_line(aes(x = as.numeric(Month)))+
+  labs(x = "Month", y = expression("Monthly Mean Air Temperature " (degree*C)))+
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 12))+
+  scale_color_manual(name = "Site", 
+                     labels = c("Norcross", "NGBER (common garden)", 
+                                "Roaring Spring", "Susanville", "Little Sahara" ,"Elko", "Vale" ),
+                     values = c("#4f4f4f", "#34cfeb", 
+                                "#5f5f5f", "#6f6f6f", "#7e7e7e" , "#8e8e8e", "#9e9e9e"))+
+  ylim(-5, 28)+
+  annotate("text", x = 3.4, y = 27, label = "b) 30 Year Mean", size = 5)
+
+f_TAVG_2021 <- ggplot(NOAA_weather %>% filter(WaterYear == 2021) %>% filter(Site != "NGBER_moderate") %>% filter(Site != "NGBER_severe"), aes(x = as.factor(Month), y = as.numeric(TAVG_C), col = Site))+
+  geom_point()+
+  geom_line(aes(x = as.numeric(Month)))+
+  labs(x = "Month", y = expression("Monthly Air Temperature " (degree*C)))+
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 12))+
+  scale_color_manual(name = "Site", 
+                     labels = c("Norcross", "NGBER (common garden)", 
+                                "Roaring Spring", "Susanville", "Little Sahara" ,"Elko", "Vale" ),
+                     values = c("#4f4f4f", "#34cfeb", 
+                                "#5f5f5f", "#6f6f6f", "#7e7e7e" , "#8e8e8e", "#9e9e9e"))+
+  ylim(-5, 28)+
+  annotate("text", x = 3, y = 27, label = "d) 2020-2021", size = 5)
+
+f_TAVG_2022 <- ggplot(NOAA_weather %>% filter(WaterYear == 2022) %>% filter(Site != "NGBER_moderate") %>% filter(Site != "NGBER_severe"), aes(x = as.factor(Month), y = as.numeric(TAVG_C), col = Site))+
+  geom_point()+
+  geom_line(aes(x = as.numeric(Month)))+
+  labs(x = "Month", y = expression("Monthly Air Temperature " (degree*C)))+
+  theme(text = element_text(size=15),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        axis.title = element_text(size = 12))+
+  scale_color_manual(name = "Site", 
+                     labels = c("Norcross", "NGBER (common garden)", 
+                                "Roaring Spring", "Susanville", "Little Sahara" ,"Elko", "Vale" ),
+                     values = c("#4f4f4f", "#34cfeb", 
+                                "#5f5f5f", "#6f6f6f", "#7e7e7e" , "#8e8e8e", "#9e9e9e"))+
+  ylim(-5, 28)+
+  annotate("text", x = 3, y = 27, label = "f) 2021-2022", size = 5)
+
+ggarrange(f_PPT_30YR, f_TAVG_30YR, f_PPT_2021, f_TAVG_2021, f_PPT_2022, f_TAVG_2022, 
+          ncol = 2, nrow = 3, common.legend = TRUE, legend= "right", align = "h")
+
 
 #PCA of climate variables v2 with NOAA data
 #check for multicollinearity

@@ -9,3 +9,4 @@ climate_all_redo <- read_csv(paste(datpath, "/Weather station/Combined_weather_t
 USFS_climate <- read_csv(paste(datpath, "/Weather station/Seedlot_climate_data.csv", sep = ""))
 Grw_climate <- read_csv(paste(datpath, "/Weather station/Early_late_GS_NOAA_weather_station_all_sites.csv", sep = ""))
 mix_climate <- read_csv(paste(datpath, "/Weather station/NOAA_PRISM_mixed.csv", sep = ""))
+NOAA_weather <- read_csv(paste(datpath, "/Weather station/NOAA_weather_station_monthly_all_sites.csv", sep = ""))
