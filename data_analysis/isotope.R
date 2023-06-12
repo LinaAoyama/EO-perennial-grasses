@@ -19,9 +19,10 @@ isotope_summary <- isotope %>%
   summarize(mean_13C = mean(delta_13C),
             se_13C = se(delta_13C))
 
+levels(isotope_summary$Time) <- c("seed", "June 2021", "July 2021", "July 2022")
 
 #Delta 13C by population and time
-p1 <- ggplot(isotope_summary %>% filter(Time != "June_2021"), aes(x = Population, y = mean_13C)) +
+p1 <- ggplot(isotope_summary %>% filter(Time != "June 2021"), aes(x = Population, y = mean_13C)) +
   geom_point()+
   geom_errorbar(aes(ymin = mean_13C-se_13C, ymax = mean_13C+se_13C), width = 0.4, alpha = 0.9, size = 1) +
   facet_grid(~Time)+
@@ -33,7 +34,7 @@ p1 <- ggplot(isotope_summary %>% filter(Time != "June_2021"), aes(x = Population
       panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
       axis.title = element_text(size = 15),
       legend.position = "top")+
-  ylab(bquote(Delta^13*C))+
+  ylab(bquote(delta^13*C))+
   xlab("Seed Source")+
   scale_y_reverse()
 
@@ -50,19 +51,19 @@ TukeyHSD(aov(delta_13C ~ Population, isotope%>%filter(Year == "2022")))
 #annotate p1
 dat_text1 <- data.frame(
   label = c("N.S."),
-  Time   = factor(c("July_2021"), levels = c( "June_2021", "July_2021", "July_2022")),
+  Time   = factor(c("July 2021"), levels = c( "June 2021", "July 2021", "July 2022")),
   x     = c(3.5),
-  y     = c(-25)
+  y     = c(-28.5)
 )
 dat_text2 <- data.frame(
   label = c("*"),
-  Time   = factor(c("July_2022"), levels = c( "June_2021", "July_2021", "July_2022")),
+  Time   = factor(c("July 2022"), levels = c( "June 2021", "July 2021", "July 2022")),
   x     = c(4),
-  y     = -25
+  y     = -28.5
 )
 
 p1+geom_text(data = dat_text1, mapping = aes(x = x, y = y, label = label))+
-  geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label), size = 5)
+  geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label), size = 7)
 
 
 #Delta 13C by precipitation treatment
