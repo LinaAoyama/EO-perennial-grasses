@@ -109,7 +109,7 @@ cumulative_summary <- cumulative %>%
             se_mortality_Y1 = se(cum_mortality), 
             mean_max_emerg = mean(total_emerg, na.rm = TRUE),
             se_max_emerg = se(total_emerg)) 
-cumulative_summary$Population <- ordered(cumulative_summary$Population, levels = c("Norc", "Vale","Susa", "Roar","Elko" ,"Litt"))
+cumulative_summary$Population <- ordered(cumulative_summary$Population, levels = c("Norc", "Roar","Susa","Litt", "Elko", "Vale"))
 
 
 #ANOVA CUMULATIVE FIRST YEAR EMERGENCE
@@ -197,7 +197,7 @@ establishment_summary <- emergence %>%
   group_by(Year, Population, PPT_Treatment) %>%
   summarise(mean_est_Y1 = mean(establishment, na.rm = TRUE),
             se_est_Y1 = se(establishment)) 
-establishment_summary$Population <- ordered(establishment_summary$Population, levels = c("Norc", "Vale","Susa", "Roar","Elko" ,"Litt"))
+establishment_summary$Population <- ordered(establishment_summary$Population, levels = c("Norc", "Roar","Susa","Litt", "Elko", "Vale"))
 
 #ANOVA FIRST YEAR ESTABLISHMENT DENSITY
 summary(aov(ELELY1EMG ~ Population*PPT_Treatment*Year, emergence %>%
@@ -418,7 +418,7 @@ second_dens_summary <- emergence %>%
   group_by(Year, Population, PPT_Treatment) %>%
   summarise(mean_survival_Y2 = mean(survival, na.rm = TRUE),
             se_survival_Y2 = se(survival)) 
-second_dens_summary$Population <- ordered(second_dens_summary$Population, levels = c("Norc", "Vale","Susa", "Roar","Elko" ,"Litt"))
+second_dens_summary$Population <- ordered(second_dens_summary$Population, levels = c("Norc", "Roar","Susa","Litt", "Elko", "Vale"))
 
 #ANOVA SECOND YEAR SURVIVAL
 summary(aov(survival ~ Population*PPT_Treatment, emergence %>%
@@ -429,6 +429,14 @@ TukeyHSD(aov(survival ~ Population*PPT_Treatment, emergence %>%
                filter(Month == "Jul") %>%
                filter(Year == "2022") %>%
                mutate(survival = ELELY2EMG)))
+
+second_dens <- emergence %>%
+  filter(Month == "Jul") %>%
+  filter(Year == "2022") %>%
+  mutate(survival = ELELY2EMG*4)%>%
+  group_by( PPT_Treatment) %>%
+  summarise(mean_survival_Y2 = mean(survival, na.rm = TRUE),
+            se_survival_Y2 = se(survival)) 
 
 #Visualize SECOND YEAR DENSITY by population and PPT
 f_second_dens <- ggplot(second_dens_summary, aes(y = mean_survival_Y2, x = Population)) +
@@ -450,27 +458,27 @@ f_second_dens <- ggplot(second_dens_summary, aes(y = mean_survival_Y2, x = Popul
 
 #annotate f_second_dens
 dat_text4 <- data.frame(
-  label = c("a", "a", "a", "a", "a", "a"),
+  label = c("N.S."),
   PPT_Treatment   = factor(c("ambient"), levels = c( "ambient", "moderate", "severe")),
-  x     = c(1, 2, 3, 4, 5, 6),
+  x     = c(3.5),
   y     = 10
 )
 dat_text5 <- data.frame(
-  label = c("a", "b", "a", "a", "a", "b"),
+  label = c( "*", "*"),
   PPT_Treatment   = factor(c("moderate"), levels = c( "ambient", "moderate", "severe")),
-  x     = c(1, 2, 3, 4, 5, 6),
+  x     = c( 4, 6),
   y     = 10
 )
 dat_text6 <- data.frame(
-  label = c("a", "a", "a", "a", "a", "a"),
+  label = c("N.S."),
   PPT_Treatment   = factor(c("severe"), levels = c( "ambient", "moderate", "severe")),
-  x     = c(1, 2, 3, 4, 5, 6),
+  x     = c(3.5),
   y     = 10
 )
 
-f_second_dens_stats <- f_second_dens+geom_text(data = dat_text4, mapping = aes(x = x, y = y, label = label))+
-  geom_text(data = dat_text5, mapping = aes(x = x, y = y, label = label))+
-  geom_text(data = dat_text6, mapping = aes(x = x, y = y, label = label))
+f_second_dens_stats <- f_second_dens+geom_text(data = dat_text4, mapping = aes(x = x, y = y, label = label), size = 4)+
+  geom_text(data = dat_text5, mapping = aes(x = x, y = y, label = label),  size = 5)+
+  geom_text(data = dat_text6, mapping = aes(x = x, y = y, label = label), size = 4)
 
 #Combine 1st YR total emergence, 1st YR Density, 2nd YR Density plots
 ggarrange(f_cum_emergence_stats, f_establish_stats, f_second_dens_stats, ncol = 1, nrow = 3, 
@@ -523,3 +531,53 @@ f_first_yr_cohorts <- ggplot(first_yr_summary, aes(x = Population)) +
 #ylim(0, 50)+
 #labs(col = "Treatment")+
 #scale_color_manual(values=c("#34cfeb", "#ebcf34", "#eb6734"))
+
+#annotate f_first_yr_cohorts
+dat_text7 <- data.frame(
+  label = c("N.S."),
+  PPT_Treatment   = factor(c("ambient"), levels = c( "ambient", "moderate", "severe")),
+  Year = 2021,
+  x     = c(3.5),
+  y     = 210
+)
+dat_text8 <- data.frame(
+  label = c("*", "**"),
+  PPT_Treatment   = factor(c("moderate"), levels = c( "ambient", "moderate", "severe")),
+  Year = 2021,
+  x     = c(3, 6),
+  y     = 210
+)
+dat_text9 <- data.frame(
+  label = c("*", "*"),
+  PPT_Treatment   = factor(c("severe"), levels = c( "ambient", "moderate", "severe")),
+  Year = 2021,
+  x     = c(3, 6),
+  y     = 210
+)
+dat_text7_2 <- data.frame(
+  label = c("N.S."),
+  PPT_Treatment   = factor(c("ambient"), levels = c( "ambient", "moderate", "severe")),
+  Year = 2022,
+  x     = c(3.5),
+  y     = 33
+)
+dat_text8_2 <- data.frame(
+  label = c("N.S."),
+  PPT_Treatment   = factor(c("moderate"), levels = c( "ambient", "moderate", "severe")),
+  Year = 2022,
+  x     = c(3.5),
+  y     = 33
+)
+dat_text9_2 <- data.frame(
+  label = c("N.S."),
+  PPT_Treatment   = factor(c("severe"), levels = c( "ambient", "moderate", "severe")),
+  Year = 2022,
+  x     = c(3.5),
+  y     = 33
+)
+f_first_dens_stats <- f_first_yr_cohorts+geom_text(data = dat_text7, mapping = aes(x = x, y = y, label = label), size = 4)+
+  geom_text(data = dat_text8, mapping = aes(x = x, y = y, label = label), size = 5)+
+  geom_text(data = dat_text9, mapping = aes(x = x, y = y, label = label), size = 5)+
+  geom_text(data= dat_text7_2, mapping = aes(x =x, y = y, label = label))+
+  geom_text(data= dat_text8_2, mapping = aes(x =x, y = y, label = label))+
+  geom_text(data= dat_text9_2, mapping = aes(x =x, y = y, label = label))
