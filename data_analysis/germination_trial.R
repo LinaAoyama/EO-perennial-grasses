@@ -19,7 +19,7 @@ germ_trial_simple <- germ_trial %>%
   filter(Week != "0")
 
 # Reorder populations by aridity
-germ_trial_simple$Population <- ordered(germ_trial_simple$Population, levels = c("Norcross", "Vale","Susanville", "Roaring Springs","Elko" ,"Little Sahara"))
+germ_trial_simple$Population <- ordered(germ_trial_simple$Population, levels = c("Norcross", "Roaring Springs","Susanville", "Little Sahara","Elko" ,"Vale"))
 
 ### Visualize raw data
 ggplot(germ_trial_simple, aes(x = Temperature, y = Germination/25, col = Week))+
@@ -52,7 +52,7 @@ ggplot(germ_trial_summary%>%filter(Week == "2"), aes(x = Temperature, y = mean_g
 
 ggplot(germ_trial_summary%>%filter(Week == "2"), aes(x = Temperature, y = mean_germination, col = Population))+
   geom_smooth(method="loess",se=TRUE)+
-  geom_point()+
+  #geom_point()+
   #geom_line(size = 1)+
   #facet_grid(~Population)+
   #geom_errorbar(aes(ymin = mean_germination-se_germination, ymax = mean_germination+se_germination), width = 0.6, alpha = 1, size = 1) +
@@ -62,10 +62,10 @@ ggplot(germ_trial_summary%>%filter(Week == "2"), aes(x = Temperature, y = mean_g
         panel.background = element_blank(),
         axis.line = element_line(colour = "black"),
         panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
-        axis.title = element_text(size = 15),
-        legend.position = "bottom")+
+        axis.title = element_text(size = 12),
+        legend.position = "right")+
   ylab(bquote(Mean~Germination~Rate))+
   xlab(bquote(Temperature*degree*C))+
-  scale_color_manual( values = c("#01665E", "#5AB4AC" , "#C7EAE5","#F6E8C3","#D8B365", "#8C510A"  ))
+  scale_color_manual("Seed Source", values = c("#01665E", "#5AB4AC" , "#C7EAE5","#F6E8C3","#D8B365", "#8C510A"  ))
 
 brewer.pal(n = 6, name = "BrBG")
