@@ -12,6 +12,7 @@ library(corrplot) #correlation matrix
 library(dplyr)
 library(lubridate)
 library(ggrepel) #add labels to pca
+library(ggfortify) #alternative pca package
 
 #PCA of climate variables from PRISM
 
@@ -226,7 +227,7 @@ pca_climate_all = rda(climate_all_simple[1:7,], scale = TRUE)
 biplot(pca_climate_all, display = c("sites", "species"), type = c("text", "points")) #plot biplot
 pca_climate_scores_all <- as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("sites"))) #extract pca1 and pca2 scores
 pca_climate_scores_lab_all = as.data.frame(cbind(climate_all_redo[1:7,1],pca_climate_scores_all))  #add plot info back
-pca_climate_scores_lab_all$Site <- ordered(as.factor(pca_climate_scores_lab_all$Site), levels = c("Norcross","NGBER","NGBER moderate", "NGBER severe", "Roaring Springs", "Vale", "Susanville", "Elko", "Little Sahara"))
+pca_climate_scores_lab_all$Site <- ordered(as.factor(pca_climate_scores_lab_all$Site), levels = c("Norcross","NGBER","NGBER moderate", "NGBER severe", "Roaring Springs",  "Susanville", "Little Sahara", "Elko","Vale"))
 envout_all<-as.data.frame(scores(pca_climate_all, choices=c(1,2), display=c("species")))
 summary(pca_climate_all)
 #visualize PCA plot
@@ -242,12 +243,35 @@ ggplot(pca_climate_scores_lab_all, aes(x = PC1, y = PC2))+
                alpha = 0.5, size = 1, colour = "#a9a9a9") +
   geom_text(data = envout_all, aes(x = PC1, y = PC2), colour = "#3C486B",
             fontface = "bold", label = c("Annual Precip", "Late Season Avg Temp","July Max VPD", "Early Season Avg Temp", "Days below 0C"), size = 4)+
-  geom_point(size = 4, aes(colour = Site), alpha = 0.5)+
+  geom_point(size = 7, aes(colour = Site), alpha = 0.5)+
   #scale_color_discrete(name = "Site", labels = c("Norcross", "NGBER (common garden)", "Vale", "Susanville", "Roaring Spring", "Elko", "Little Sahara"))+
   xlim(-1.8, 1.8)+
   ylim(-1.5, 1.7)+
   geom_text(aes(label=Site),vjust = 1.6, size = 4)+
-  labs(x=expression(atop("Cool" %<->% "Warm","PC1 (52.0%)")), y = expression(atop("Dry" %<->% "Wet","PC2 (26.2%)")))
+  labs(x=expression(atop("Cool" %<->% "Warm","PC1 (52.0%)")), y = expression(atop("Dry" %<->% "Wet","PC2 (26.2%)")))+
+  scale_color_manual( values = c("#01665E", "#FFC0CB", "#5AB4AC" , "#C7EAE5","#F6E8C3","#D8B365", "#8C510A"  ))
+
+#could I add treatment points to pca???
+pca_alt <- prcomp(climate_all_simple[1:7,], scale = TRUE)
+summary(pca_alt)
+
+autoplot(pca_alt, x = 1, y = 2, data = pca_climate_scores_lab_all, frame = F, loadings = T, loadings.label = T, label = F, col = "Site", size = 2, loadings.colour = "black",
+         loadings.label.colour="black",
+         loadings.label.repel=TRUE) +
+  theme_classic() +
+  #stat_ellipse(aes(group = group)) + 
+  theme(
+    panel.border = element_rect(colour = "black", fill = NA),
+    legend.title = element_blank())
+
+df <- cbind(pca_alt$x[,1:2], pca_climate_scores_lab_all[,1]) %>% as.data.frame()
+df$PC1 <- as.numeric(df$PC1)/(pca_alt$sdev[1] * sqrt(nrow(pca_climate_scores_lab)))
+df$PC2 <- as.numeric(df$PC2)/(pca_alt$sdev[2] * sqrt(nrow(pca_climate_scores_lab)))
+df$V3 <- as.factor(df$V3)
+
+ggplot(df, aes(PC1, PC2, color = V3))+
+  geom_point(size = 3)+
+  geom_text(aes(label=V3),vjust = 1.6, size = 4)
 
 
 
