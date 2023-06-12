@@ -20,25 +20,26 @@ soil_mois_long <- soil_mois %>%
 #Reorder factor levels
 soil_mois_long$Depth <- factor(soil_mois_long$Depth, levels = c("5 cm", "15 cm"))
 soil_mois_long$Treatment <- factor(soil_mois_long$Treatment, levels = c("ambient", "50% cover", "80% cover"))
+levels(soil_mois_long$Treatment) <- c("ambient", "moderate", "severe")
 
 #Specify the Time column by month, date, year, and time
 soil_mois_long$Time <- mdy_hm(soil_mois_long$Time)
 
 ### Visualize data
 #Timeseries
-ggplot(soil_mois_long, aes(Time, as.numeric(VWC))) +
+ggplot(soil_mois_long %>% filter(Depth == "5 cm"), aes(Time, as.numeric(VWC))) +
   geom_line(aes(color = Treatment)) +
-  facet_wrap(~Depth, ncol = 1)+
+  #facet_wrap(~Depth, ncol = 1)+
   ylim(0, 0.35)+
   ylab(bquote(Soil~Volumetric~Water~Content~(m^3/m^3)))+
-  theme(text = element_text(size=16),
+  theme(text = element_text(size=15),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         axis.line = element_line(colour = "black"),
-        #legend.position = "none",
-        axis.title = element_text(size = 14))+
-  scale_color_manual(name = "Treatment", values = c("#F1C40F", "#F39C12", "#D35400"))
+        legend.position = "top",
+        axis.title = element_text(size = 13))+
+  scale_color_manual(name = "Treatment", values = c("#34cfeb", "#ebcf34", "#eb6734"))
 #averages
 ggplot(soil_mois_long, aes(Treatment, as.numeric(VWC)))+
   geom_boxplot()+

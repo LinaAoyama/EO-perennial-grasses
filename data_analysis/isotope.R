@@ -22,10 +22,10 @@ isotope_summary <- isotope %>%
 levels(isotope_summary$Time) <- c("seed", "June 2021", "July 2021", "July 2022")
 
 #Delta 13C by population and time
-p1 <- ggplot(isotope_summary %>% filter(Time != "June 2021"), aes(x = Population, y = mean_13C)) +
+p1 <- ggplot(isotope_summary %>% filter(Time == "July 2022"), aes(x = Population, y = mean_13C)) +
   geom_point()+
   geom_errorbar(aes(ymin = mean_13C-se_13C, ymax = mean_13C+se_13C), width = 0.4, alpha = 0.9, size = 1) +
-  facet_grid(~Time)+
+  #facet_grid(~Time)+
   theme(text = element_text(size=15),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
@@ -62,8 +62,9 @@ dat_text2 <- data.frame(
   y     = -28.5
 )
 
-p1+geom_text(data = dat_text1, mapping = aes(x = x, y = y, label = label))+
-  geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label), size = 7)
+p1+
+#geom_text(data = dat_text1, mapping = aes(x = x, y = y, label = label))+
+geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label), size = 7)
 
 
 #Delta 13C by precipitation treatment
