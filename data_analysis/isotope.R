@@ -56,15 +56,17 @@ dat_text1 <- data.frame(
   y     = c(-28.5)
 )
 dat_text2 <- data.frame(
-  label = c("*"),
+  label = c("a", "a", "a", "b", "a", "a"), 
   Time   = factor(c("July 2022"), levels = c( "June 2021", "July 2021", "July 2022")),
-  x     = c(4),
+  x     = c(1, 2, 3, 4, 5, 6),
   y     = -28.5
 )
 
+
+###FIG4: Isotope 
 p1+
 #geom_text(data = dat_text1, mapping = aes(x = x, y = y, label = label))+
-geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label), size = 7)
+geom_text(data = dat_text2, mapping = aes(x = x, y = y, label = label), size = 6)
 
 
 #Delta 13C by precipitation treatment

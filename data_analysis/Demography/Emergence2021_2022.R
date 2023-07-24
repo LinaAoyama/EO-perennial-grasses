@@ -581,3 +581,6 @@ f_first_dens_stats <- f_first_yr_cohorts+geom_text(data = dat_text7, mapping = a
   geom_text(data= dat_text7_2, mapping = aes(x =x, y = y, label = label))+
   geom_text(data= dat_text8_2, mapping = aes(x =x, y = y, label = label))+
   geom_text(data= dat_text9_2, mapping = aes(x =x, y = y, label = label))
+
+### FIG 3: FIRST EMERGENCE & SECOND YEAR SURVIVAL 
+ggarrange(f_first_dens_stats, f_second_dens_stats, nrow = 2, ncol =1)
