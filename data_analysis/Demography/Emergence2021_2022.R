@@ -2,6 +2,8 @@
 library(tidyverse)
 library(ggplot2)
 library(ggpubr)
+library(nlme) #mixed model
+library(MuMIn) #R squared of a model
 
 ### Data Import
 source("data_compiling/compiling_demography.R")
@@ -18,10 +20,6 @@ se<-function(x){
 #Seedling mortality rate = number of dead YR1 seedlings/number of germinated seeds
 #Seedling establishment rate = number of survived YR1 seedlings in July/number of sown seeds
 #Seedling survival rate = number of survived YR2 seedlings in July/number of sown seeds
-
-summary(aov(ELELY1EMG ~ Population*Year, emergence))
-summary(aov(ELELY1EMG ~ Population*Year*PPT_Treatment, emergence))
-summary(aov(ELELY1EMG ~ Population*Year*PPT_Treatment*BRTE_Treatment, emergence))
 
 # #Summarize FIRST YEAR EMERGENCE by population and month and PPT
 # emergence_summary <- emergence %>%
@@ -116,6 +114,15 @@ cumulative_summary$Population <- ordered(cumulative_summary$Population, levels =
 summary(aov(total_emerg ~ Population*PPT_Treatment*Year, cumulative))
 TukeyHSD(aov(total_emerg ~ Population*PPT_Treatment, cumulative%>%filter(Year == 2021)))
 TukeyHSD(aov(total_emerg ~ Population*PPT_Treatment, cumulative%>%filter(Year == 2022)))
+
+#Mixed model CUMULATIVE FIRST YEAR EMERGENCE
+mixed_model_Y1cum <-lme(total_emerg ~ Population*PPT_Treatment*Year, random=~1|Block, cumulative , na.action=na.exclude)
+summary(mixed_model_Y1cum)
+anova(mixed_model_Y1cum) #all interactions significant
+r.squaredGLMM(mixed_model_Y1cum) 
+qqnorm(residuals(mixed_model_Y1cum))
+qqline(residuals(mixed_model_Y1cum))
+shapiro.test(residuals(mixed_model_Y1cum))
 
 #Visualize CUMULATIVE FIRST YEAR EMERGENCE by population and PPT
 f_cum_emergence <- ggplot(cumulative_summary, aes(y = mean_max_emerg, x = Population)) +

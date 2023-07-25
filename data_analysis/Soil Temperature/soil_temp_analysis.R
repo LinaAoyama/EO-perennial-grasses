@@ -149,4 +149,7 @@ source("data_analysis/analysis_soil_moisture_data.R")
 
 soilfig_output <- ggarrange(mois2021, mois2022, max2021, max2022, min2021, min2022, common.legend = TRUE, ncol = 2, nrow = 3, legend = "right")
 
-
+#On average, how much warmer were the drought plots compared to ambient plots?
+avg_soil_temp <- soil_temp_summary %>%
+  group_by(Depth, Treatment) %>%
+  summarize(mean = mean(meantemp))
